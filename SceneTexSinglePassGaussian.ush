@@ -1,0 +1,21 @@
+float Tau = 6.28318530718; 
+float Sigma = float(Samples) * 0.25;
+
+float2 PixelSize = float2(1.0,1.0) / ScreenSize;
+float2 UV = GetDefaultSceneTextureUV(Parameters, SceneTextureId);
+
+float4 PixelSum = float4(0,0,0,0);
+float Accum = 0.0;
+float Weight = 0.0;
+float2 Offset = float2(0,0);
+
+for (int x = -Samples / 2; x < Samples / 2; x += Downsample) {
+    for (int y = -Samples / 2; y < Samples / 2; y += Downsample) {
+        Offset = float2(x, y);
+        Weight = 1.0 / (2.0 * Tau * (Sigma * Sigma)) * exp(-(((Offset.x * Offset.x) + (Offset.y * Offset.y)) / (2.0 * (Sigma * Sigma))));
+        PixelSum += SceneTextureLookup(UV + PixelSize * Offset, SceneTextureId, 0) * Weight;
+        Accum += Weight;
+    }
+}
+
+return PixelSum / Accum;

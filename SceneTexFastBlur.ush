@@ -1,0 +1,20 @@
+float Tau = 6.28318530718; 
+
+float2 BlurRadius = Radius/ScreenSize;
+float2 UV = GetDefaultSceneTextureUV(Parameters, SceneTextureId);
+
+float4 PixelSum = float4(0, 0, 0, 0);
+
+// Blur calculations
+for(float d=0.0; d<Tau; d+=Tau/Directions)
+{
+    for(float i=1.0/Samples; i<=1.0; i+=1.0/Samples)
+    {
+        float2 UVSample = UV + float2(cos(d),sin(d))*BlurRadius*i;
+        PixelSum += SceneTextureLookup(UVSample, SceneTextureId, 0);		
+    }
+}
+
+PixelSum /= Samples*Directions;
+
+return PixelSum;
